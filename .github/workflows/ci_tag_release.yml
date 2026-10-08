@@ -47,7 +47,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: npm install --global web-ext
 
-      - name: Sign XPI with AMO (unlisted / self-distributed)
+      - name: Sign XPI with AMO (unlisted / for release asset)
         if: startsWith(github.ref, 'refs/tags/') && !(endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta'))
         env:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
@@ -59,6 +59,23 @@ jobs:
             --channel=unlisted
           echo 'Signed artifacts:'
           ls -la builds/amo
+
+      - name: Submit listed version to AMO (best effort)
+        continue-on-error: true
+        if: startsWith(github.ref, 'refs/tags/') && !(endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta'))
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+        run: |
+          # Submits the version for the public AMO listing. If it requires
+          # manual review it may not be signed within the timeout; the
+          # submission is still registered and will be reviewed on AMO.
+          web-ext sign \
+            --source-dir=extension \
+            --artifacts-dir=builds/amo-listed \
+            --channel=listed \
+            --timeout 600000 || echo "::warning::Listed submission not signed within timeout - check AMO review."
+          ls -la builds/amo-listed 2>/dev/null || true
 
       - name: GitHub Releases
         id: github_releases

@@ -10,15 +10,15 @@
     ]
   },
   "description": "__MSG_extensionDescription__",
-  "homepage_url": "https://github.com/Cookie-AutoDelete/Cookie-AutoDelete",
-  "author": "CAD Team",
+  "homepage_url": "https://github.com/kylianpl/Cookie-AutoDelete",
+  "author": "kylianpl",
   "default_locale": "en",
   "browser_action": {
     "browser_style": false,
     "default_icon": {
       "48": "icons/icon_48.png"
     },
-    "default_title": "Cookie AutoDelete",
+    "default_title": "CAD Neo",
     "default_popup": "popup/popup.html"
   },
   "icons": {
