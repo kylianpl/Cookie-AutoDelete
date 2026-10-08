@@ -27,7 +27,7 @@ npm run build
 ## Reproducing the submitted XPI
 
 The submitted XPI is the output of the commands above on this source at version
-`3.9.3`. `npm ci` installs the exact dependency tree pinned in
+`3.9.4`. `npm ci` installs the exact dependency tree pinned in
 `package-lock.json`, so the build is reproducible with the Node version above.
 
 ## Project layout

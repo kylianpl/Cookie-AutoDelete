@@ -187,10 +187,9 @@ function chromeBuild(cb) {
 
   const mf = require(path.join(EXTDIR, MANIFEST));
   delMFPerm(mf, 'contextualIdentities');
-  console.log(
-    '> Removing [applications] section ... %s',
-    delete mf.applications ? 'Done!' : 'Failed',
-  );
+  delete mf.applications;
+  delete mf.browser_specific_settings;
+  console.log('> Removing Firefox-specific sections ... Done!');
 
   console.log('Overwriting %s for Google Chrome ...', MANIFEST);
   fs.writeFileSync(path.join(EXTDIR, MANIFEST), JSON.stringify(mf, null, 2));

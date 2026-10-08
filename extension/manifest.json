@@ -25,10 +25,13 @@
     "48": "icons/icon_48.png",
     "128": "icons/icon_128.png"
   },
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "CAD-Neo@kytech.fr",
-      "strict_min_version": "63.0"
+      "strict_min_version": "63.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "minimum_chrome_version": "74",
