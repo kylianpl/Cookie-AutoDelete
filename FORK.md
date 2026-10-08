@@ -59,8 +59,8 @@ Each release ships two XPIs:
   ```
 
 - the `*.xpi` from `builds/amo/` — **signed by AMO** (unlisted / self-distributed),
-  installable **permanently on stable Firefox and Fennec**. First install shows a
-  one-time self-distributed prompt.
+  installable **permanently on stable Firefox and Fennec** (AMO-signed, so no
+  “unverified extension” warning).
 
 ## Extension ID & signing
 
