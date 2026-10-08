@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: Checkout Commit
         uses: actions/checkout@v4
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '20.x'
       - name: Install Dependencies (npm ci)
         run: npm ci --no-fund
       - name: Run Tests
@@ -43,6 +43,23 @@ jobs:
         with:
           name: coverage
           path: coverage
+      - name: Install web-ext
+        if: startsWith(github.ref, 'refs/tags/')
+        run: npm install --global web-ext
+
+      - name: Sign XPI with AMO (unlisted / self-distributed)
+        if: startsWith(github.ref, 'refs/tags/') && !(endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta'))
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+        run: |
+          web-ext sign \
+            --source-dir=extension \
+            --artifacts-dir=builds/amo \
+            --channel=unlisted
+          echo 'Signed artifacts:'
+          ls -la builds/amo
+
       - name: GitHub Releases
         id: github_releases
         uses: softprops/action-gh-release@v2
@@ -53,11 +70,12 @@ jobs:
           files: |
             builds/Cookie-AutoDelete_*_Chrome.zip
             builds/Cookie-AutoDelete_*_Firefox.xpi
+            builds/amo/*.xpi
           body: |
             Auto-generated fork release.
 
-            The Firefox XPI is **unsigned**: install it on Firefox Nightly, load it
-            as a temporary add-on, or sign it yourself with your own AMO account.
+            - `Cookie-AutoDelete_*_Firefox.xpi` — unsigned build (Nightly / temporary add-on).
+            - the `*.xpi` from `builds/amo/` — **signed by AMO** (unlisted), installable permanently.
           prerelease: ${{ endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta') }}
           draft: false
       # NOTE (fork): Chrome Web Store and AMO uploads from upstream are intentionally

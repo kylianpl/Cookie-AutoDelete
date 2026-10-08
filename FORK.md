@@ -46,11 +46,10 @@ npm run build      # -> builds/Cookie-AutoDelete_*_Firefox.xpi (+ Chrome zip)
 
 ## Install the Firefox XPI
 
-The XPI produced by this fork is **unsigned**, so on stable Firefox/Fennec you
-must either:
+Each release ships two XPIs:
 
-- run **Firefox Nightly** (allows unsigned add-ons), or
-- load it as a **temporary add-on** over USB remote debugging, e.g.:
+- `Cookie-AutoDelete_*_Firefox.xpi` — **unsigned** (dev): install on Firefox
+  Nightly, or load it as a temporary add-on over USB, e.g.
 
   ```bash
   npm i -g web-ext
@@ -58,15 +57,24 @@ must either:
     --target=firefox-android --adb-device=<serial> \
     --firefox-apk=org.mozilla.fennec_fdroid --no-reload
   ```
-- or sign it with your own AMO account (see “Extension ID” below).
 
-## Extension ID
+- the `*.xpi` from `builds/amo/` — **signed by AMO** (unlisted / self-distributed),
+  installable **permanently on stable Firefox and Fennec**. First install shows a
+  one-time self-distributed prompt.
 
-This fork currently keeps the upstream ID `CookieAutoDelete@kennydo.com`, which
-means it can **not** be signed/installed permanently on stable Firefox — that ID
-belongs to the upstream AMO listing. If you want a permanently installable,
-AMO-signed build, change the ID (`applications.gecko.id` in
-`extension/manifest.json`) to your own and sign it as a new unlisted add-on.
+## Extension ID & signing
+
+This fork uses its own ID `CookieAutoDelete-Fork@kylianpl.github.io`
+(`applications.gecko.id` in `extension/manifest.json`), independent from the
+upstream AMO listing (that is why it can be signed at all).
+
+Signing runs in CI via `web-ext sign --channel=unlisted`. Add these repository
+secrets (Settings → Secrets and variables → Actions):
+
+- `WEB_EXT_API_KEY`
+- `WEB_EXT_API_SECRET`
+
+(AMO → Tools → “Manage API keys”.)
 
 ## Releases
 
