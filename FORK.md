@@ -64,7 +64,7 @@ Each release ships two XPIs:
 
 ## Extension ID & signing
 
-This fork uses its own ID `CookieAutoDelete-Fork@kylianpl.github.io`
+This fork uses its own ID `CAD-Neo@kytech.fr`
 (`applications.gecko.id` in `extension/manifest.json`), independent from the
 upstream AMO listing (that is why it can be signed at all).
 
