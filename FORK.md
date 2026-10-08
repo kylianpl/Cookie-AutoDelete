@@ -55,10 +55,9 @@ npm run build      # -> builds/Cookie-AutoDelete_*_Firefox.xpi (+ Chrome zip)
 - **Firefox for Android**: install **CAD Neo** from its AMO page (listed).
   Firefox for Android only installs extensions from AMO, so the listed channel
   is required.
-- **Desktop**: install from AMO, or use the AMO-signed XPI from `builds/amo/`
-  via `about:addons` → “Install Add-on From File”.
-- The `Cookie-AutoDelete_*_Firefox.xpi` release asset is the **unsigned** build,
-  for Firefox Nightly / temporary add-on development.
+- **Desktop**: install from AMO, or use the unsigned XPI from the release via
+  `about:addons` → “Install Add-on From File” (Firefox Nightly), or sign it
+  yourself.
 
 ## Extension ID & signing
 
@@ -66,13 +65,22 @@ This fork uses its own ID `CAD-Neo@kytech.fr`
 (`applications.gecko.id` in `extension/manifest.json`), independent from the
 upstream AMO listing.
 
-CI signs with `web-ext sign`:
+**Important:** a version is either `listed` or `unlisted`, and AMO will **not**
+convert an unlisted add-on to public — you must upload a **new version to the
+listed channel**. Also, the *first* listed version cannot be created through the
+API: AMO requires listing metadata that the API cannot set and replies
+“You cannot add a listed version to this addon via the API due to missing
+metadata. Please submit via the website”.
 
-- `--channel=unlisted` → signed XPI attached to the GitHub Release;
-- `--channel=listed` → submits the version to the public AMO listing (best
-  effort; the version may go through review).
+So the workflow is:
 
-Add these repository secrets (Settings → Secrets and variables → Actions):
+1. **First listed version** — upload the release XPI through the AMO Developer
+   Hub: *Upload New Version* → choose **“On this site”** → set license
+   (MIT) and categories → *Submit for review*.
+2. **Subsequent versions** — the CI attempts `web-ext sign --channel=listed`
+   automatically (best effort).
+
+Repository secrets (Settings → Secrets and variables → Actions):
 
 - `WEB_EXT_API_KEY`
 - `WEB_EXT_API_SECRET`

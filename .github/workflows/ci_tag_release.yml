@@ -47,19 +47,11 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: npm install --global web-ext
 
-      - name: Sign XPI with AMO (unlisted / for release asset)
-        if: startsWith(github.ref, 'refs/tags/') && !(endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta'))
-        env:
-          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
-          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
-        run: |
-          web-ext sign \
-            --source-dir=extension \
-            --artifacts-dir=builds/amo \
-            --channel=unlisted
-          echo 'Signed artifacts:'
-          ls -la builds/amo
-
+      # NOTE: the FIRST listed version must be uploaded through the AMO website.
+      # AMO needs listing metadata (license, categories, ...) that the API cannot
+      # set, and answers "You cannot add a listed version to this addon via the
+      # API due to missing metadata. Please submit via the website".
+      # Once a listed version exists, API updates below work.
       - name: Submit listed version to AMO (best effort)
         continue-on-error: true
         if: startsWith(github.ref, 'refs/tags/') && !(endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta'))
@@ -67,15 +59,11 @@ jobs:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
         run: |
-          # Submits the version for the public AMO listing. If it requires
-          # manual review it may not be signed within the timeout; the
-          # submission is still registered and will be reviewed on AMO.
           web-ext sign \
             --source-dir=extension \
             --artifacts-dir=builds/amo-listed \
             --channel=listed \
-            --timeout 600000 || echo "::warning::Listed submission not signed within timeout - check AMO review."
-          ls -la builds/amo-listed 2>/dev/null || true
+            --timeout 600000
 
       - name: GitHub Releases
         id: github_releases
@@ -87,12 +75,12 @@ jobs:
           files: |
             builds/Cookie-AutoDelete_*_Chrome.zip
             builds/Cookie-AutoDelete_*_Firefox.xpi
-            builds/amo/*.xpi
           body: |
             Auto-generated fork release.
 
-            - `Cookie-AutoDelete_*_Firefox.xpi` — unsigned build (Nightly / temporary add-on).
-            - the `*.xpi` from `builds/amo/` — **signed by AMO** (unlisted), installable permanently.
+            - `Cookie-AutoDelete_*_Firefox.xpi` — unsigned build.
+              On desktop install it via `about:addons` → “Install Add-on From File”.
+              On Android, install **CAD Neo** from its AMO listing once approved.
           prerelease: ${{ endsWith(github.ref, 'alpha') || endsWith(github.ref, 'beta') }}
           draft: false
       # NOTE (fork): Chrome Web Store and AMO uploads from upstream are intentionally
