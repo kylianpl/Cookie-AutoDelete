@@ -1,6 +1,13 @@
 {
   "releases": [
     {
+      "version": "3.9.0",
+      "notes": [
+        "Added:  Firefox for Android now cleans all supported site data types (LocalStorage, IndexedDB, Cache, Service Workers) automatically, with the options visible in Settings and per-expression. Requires Firefox for Android 85+. Based on upstream PR #1803 by @mlindsay.",
+        "Fork:  First release of this maintained fork on top of upstream v3.8.2."
+      ]
+    },
+    {
       "version": "3.8.2",
       "notes": [
         "Fixed:  Passing IP Addresses to browsingData / site data cleanups. Fixes #983 via PR#1451, with thanks to Rob W.",
